@@ -53,7 +53,55 @@ class VeggieWarrior {
           }
         }
       }
+
+      display() {
+        if (this.state === "start") {
+            this.displayStartScreen();
+        } else if (this.state === "game") {
+            this.displayStartScreen();
+        } else if (this.state === "end") {
+            this.displayEndScreen();
+        }
+      }
+
+      displayStartScreen() {
+        background(120, 200, 100);
+        textFont("Georgia");
+        textSize(50);
+        textAlign(CENTER, CENTER);
+        fill(255);
+        text("VEGGIE WARRIOR", width / 2, height / 3);
+        textSize(20);
+        text("Click to Play", width / 2, height / 2);
+      }
+
+      displayGameScreen() {
+        background(200);
+        textFont("Georgia");
+        textSize(20);
+        fill(0);
+        // Displaying the score and the lives
+        text(`Score: ${this.score}`, 10, 20);
+        text(`Lives: ${this.lives}`, width - 100, 20);
+
+        //Displaying the veggies
+        for (let veg of this.veggies) {
+            veg.display();
+        }
+      }
+
+      displayEndScreen() {
+        background(200, 50, 50);
+        textFont("Georgia");
+        textAlign(CENTER, CENTER);
+        textSize(50);
+        fill(255);
+        text("GAME OVER", width / 2, height / 3);
+        textSize(30);
+        text(`Your final score is: ${this.score}`, width / 2, height / 2);
+      }
 }
+
 // Vegetable Class
 class Vegetable {
     constructor(x, y, size) {
