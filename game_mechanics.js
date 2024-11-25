@@ -66,7 +66,7 @@ class VeggieWarrior {
         this.veggieSpawnTimer = 0;
         this.restartButton.hide();
     }
-    
+
     spawnVeggie() {
       // Add a new vegetable object to the array
       this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50)));
@@ -174,4 +174,19 @@ class Vegetable {
       return this.y > height;
     }
   }
+
+// Handling the mouse dragging for slicing the veggies
+function mouseDragged() {
+    if (game.state === "game") {
+        for(let i = game.veggies.length - 1; i >= 0; i--) {
+            let veg = game.veggies[i];
+            let d = dist (mouseX, mouseY, veg.x, veg.y);
+            if (d < veg.size / 2) {
+                game.veggies.splice(i, 1);                          // Removing sliced veggie
+                game.score++;                                       // Increasing the score
+                break;
+            }
+        }
+    }
+}
   
