@@ -4,7 +4,10 @@ function setup() {
   
   function draw() {
     background(255, 140, 0);
-  }  
+    game.update();
+    game.display();
+      }
+ 
 
 // Vegetable Class
 class Vegetable {
@@ -20,7 +23,7 @@ class Vegetable {
     update() {
       this.x += this.vx;
       this.y += this.vy;
-      this.vy += 0.2; // Gravity
+      this.vy += 0.2;               // Gravity
     }
   
     display() {
