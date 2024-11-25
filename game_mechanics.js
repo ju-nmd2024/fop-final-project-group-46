@@ -16,11 +16,57 @@ class VeggieWarrior {
       this.veggieSpawnTimer = 0;              // Timer for spawning veggies
       this.lives = 3;                         // Player starts with 3 lives
       this.score = 0;                         // Initial score
+
+      // Buttons
+      this.playButton = this.createButton("Click to Play", width / 2 - 60, height / 2, () => {
+        if (this.state === "start") {
+            this.startGame();
+        } else if (this.state === "howToPlay") {
+            this.state = "start";
+            this.playButton.html("Click to Play");
+        }
+      });
+
+      this.howToPlayButton = this.createButton("How to Play", width / 2 - 60, height / 2 + 50, () => {
+        this.state = "howToPlay";
+        this.howToPlayButton.hide();
+
+        this.playButton.html("Back");
+      });
+
+      this.restartButton = this.createButton("Restart", width / 2 - 40, height / 2 + 50, () => {
+        this.restartGame();
+      });
+      this.restartButton.hide();
   
-      // Spawn the first veggie
-      this.spawnVeggie();
+      this.font = "Georgia";    
+      this.spawnVeggie();               // Spawn the first veggie
     }
-  
+
+    createButton(label, x, y, callback) {
+        let btn = createButton(label);
+        btn.position(x, y);
+        btn.mousePressed(callback);
+        btn.hide();
+        return btn;
+    }
+    
+    startGame() {
+        this.state = "game";
+        this.playButton.hide();
+        this.howToPlayButton.hide();
+    }
+
+    restartGame() {
+        this.state = "start";
+        this.lives = 3;
+        this.score = 0;
+        this.veggies = [];
+        this.maxVeggies = 1;
+        this.veggieSpawnTimer = 0;
+        this.restartButton.hide();
+    }
+    
     spawnVeggie() {
       // Add a new vegetable object to the array
       this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50)));
