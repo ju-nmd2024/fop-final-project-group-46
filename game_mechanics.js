@@ -145,7 +145,7 @@ class VeggieWarrior {
     textAlign(CENTER, CENTER);
     fill(255);
     text(
-      "HOW TO PLAY:\n\nDrag the mouse over veggies to slice them!\n\nDon't let veggies fall off the screen.\n\nLose 3 lives and it's game over!",
+      "HOW TO PLAY:\n\nDrag the mouse over veggies to slice them!\nDon't let veggies fall off the screen.\nLose 3 lives and it's game over!",
       width / 2,
       height / 2 - 50
     );
@@ -161,7 +161,7 @@ class VeggieWarrior {
     textFont(this.font);
     textSize(20);
     fill(0);
-    text(`Score: ${this.score}`, 10, 20);
+    text(`Score: ${this.score}`, 50, 20);
     text(`Lives: ${this.lives}`, width - 100, 20);
 
     // Display veggies
