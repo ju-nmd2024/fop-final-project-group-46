@@ -74,7 +74,7 @@ class VeggieWarrior {
   }
 
   spawnVeggie() {
-    this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50)));
+    this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50), "whole"));
   }
 
   update() {
@@ -90,8 +90,10 @@ class VeggieWarrior {
       veg.update();
 
       if (veg.isOffScreen()) {
+        if (veg.state === "whole") {
+          this.lives--; // Reduce life only for unsliced veggies.
+        }
         this.veggies.splice(i, 1);
-        this.lives--;
       }
     }
 
@@ -187,13 +189,14 @@ class VeggieWarrior {
 
 // Vegetable Class
 class Vegetable {
-  constructor(x, y, size) {
+  constructor(x, y, size, state) {
     this.x = x;
     this.y = y;
     this.size = size;
     this.vx = random(-2, 2);
     this.vy = random(-10, -6); // Upward velocity
     this.color = color(random(50, 255), random(50, 255), random(50, 255));
+    this.state = state; // "whole" or "half"
   }
 
   update() {
@@ -221,6 +224,14 @@ class Vegetable {
   isOffScreen() {
     return this.y > height;
   }
+
+  createHalves() {
+    // Create two halves of this vegetable.
+    let halfSize = this.size / 2;
+    let half1 = new Vegetable(this.x - halfSize / 2, this.y, halfSize, "half");
+    let half2 = new Vegetable(this.x + halfSize / 2, this.y, halfSize, "half");
+    return [half1, half2];
+  }
 }
 
 // Handle mouse drag for slicing
@@ -229,8 +240,10 @@ function mouseDragged() {
     for (let i = game.veggies.length - 1; i >= 0; i--) {
       let veg = game.veggies[i];
       let d = dist(mouseX, mouseY, veg.x, veg.y);
-      if (d < veg.size / 2) {
+      if (d < veg.size / 2 && veg.state === "whole") {
+        let halves = veg.createHalves(); // Create two halves
         game.veggies.splice(i, 1); // Remove sliced veggie
+        game.veggies.push(...halves); // Add the halves to the game
         game.score++; // Increase score
         break;
       }
