@@ -1,5 +1,20 @@
-// Screen States
-let game; // Main game object
+// Declare variables for veggie images and veggie list
+let veggieImages = {};              // Object to store whole and sliced images
+let veggies = [
+  "bell pepper", "broccoli", "carrot", "chilli", "corn", "eggplant",
+  "green bean", "mushroom", "potato", "pumpkin", "shallot", "tomato", "zucchini"
+];
+let game;                           // Main game object
+
+function preload() {
+  // Load both whole and sliced versions for each veggie
+  for (let veggie of veggies) {
+    veggieImages[veggie] = {
+      whole: loadImage(`Images/${veggie}.png`),             // Whole veggie image
+      sliced: loadImage(`Images/haft ${veggie}.png`)        // Sliced veggie image
+    };
+  }
+}
 
 function setup() {
   createCanvas(600, 400);
@@ -74,7 +89,9 @@ class VeggieWarrior {
   }
 
   spawnVeggie() {
-    this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50), "whole"));
+    // Choose a random veggie type and spawn it
+    let type = random(veggies);
+    this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50), type));
   }
 
   update() {
@@ -189,14 +206,15 @@ class VeggieWarrior {
 
 // Vegetable Class
 class Vegetable {
-  constructor(x, y, size, state) {
+  constructor(x, y, size, veggieType) {
     this.x = x;
     this.y = y;
     this.size = size;
     this.vx = random(-2, 2);
-    this.vy = random(-10, -6); // Upward velocity
-    this.color = color(random(50, 255), random(50, 255), random(50, 255));
-    this.state = state; // "whole" or "half"
+    this.vy = random(-10, -6);            // Upward velocity
+    this.type = veggieType;                     // Type of veggie (e.g., "carrot")
+    this.state = "whole";                 // Can be "whole" or "halves"
+    this.halves = [];                     // Holds the two halves if sliced
   }
 
   update() {
@@ -205,6 +223,14 @@ class Vegetable {
 
     // Apply gravity
     this.vy += 0.2;
+
+    if (this.state === "halves") {
+      for (let half of this.halves) {
+        half.x += half.vx;
+        half.y += half.vy;
+        half.vy += 0.2; // Gravity
+      }
+    }
 
     // Constrain within canvas boundaries
     if (this.x <= 0 || this.x >= width) {
@@ -217,20 +243,20 @@ class Vegetable {
   }
 
   display() {
-    fill(this.color);
-    ellipse(this.x, this.y, this.size);
+    if (this.state === "whole") {
+      image(veggieImages[this.type].whole, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    } else if (this.state === "halves") {
+      for (let half of this.halves) {
+        image(veggieImages[this.type].sliced, half.x - this.size / 4, half.y - this.size / 4, this.size / 2, this.size / 2);
+      }
+    }
   }
 
   isOffScreen() {
+    if (this.state === "halves") {
+      return this.halves.every(half => half.y > height);
+    }
     return this.y > height;
-  }
-
-  createHalves() {
-    // Create two halves of this vegetable.
-    let halfSize = this.size / 2;
-    let half1 = new Vegetable(this.x - halfSize / 2, this.y, halfSize, "half");
-    let half2 = new Vegetable(this.x + halfSize / 2, this.y, halfSize, "half");
-    return [half1, half2];
   }
 }
 
@@ -239,13 +265,20 @@ function mouseDragged() {
   if (game.state === "game") {
     for (let i = game.veggies.length - 1; i >= 0; i--) {
       let veg = game.veggies[i];
-      let d = dist(mouseX, mouseY, veg.x, veg.y);
-      if (d < veg.size / 2 && veg.state === "whole") {
-        let halves = veg.createHalves(); // Create two halves
-        game.veggies.splice(i, 1); // Remove sliced veggie
-        game.veggies.push(...halves); // Add the halves to the game
-        game.score++; // Increase score
-        break;
+      if (veg.state === "whole") {
+        let d = dist(mouseX, mouseY, veg.x, veg.y);
+        if (d < veg.size / 2) {
+          veg.state = "halves";
+
+          // Create two halves
+          veg.halves = [
+            { x: veg.x - 10, y: veg.y, vx: random(-2, -1), vy: random(-6, -4) },
+            { x: veg.x + 10, y: veg.y, vx: random(1, 2), vy: random(-6, -4) }
+          ];
+
+          game.score++;
+          break;
+        }
       }
     }
   }
