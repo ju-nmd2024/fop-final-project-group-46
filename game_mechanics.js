@@ -6,6 +6,12 @@ let veggies = [
 ];
 let game;                           // Main game object
 
+// Trail variables
+let trail = [];                                             // Array to store trail positions
+let trailDuration = 250;                                    // Duration in milliseconds for trail to persist
+let trailThickness = 5;                                     // Thickness of the trail
+let trailColor = [10, 0, 0, 30];                            // Greyish Black color
+
 function preload() {
   // Load both whole and sliced versions for each veggie
   for (let veggie of veggies) {
@@ -23,10 +29,45 @@ function setup() {
 
 function draw() {
   background(200);
+
+  // Draw the trail
+  drawTrail();
+
   game.update();
   game.display();
 }
 
+// Function to draw the trail
+function drawTrail() {
+  // Add the current mouse position to the trail
+  trail.push({
+    x: mouseX,
+    y: mouseY,
+    timestamp: millis(),
+  });
+
+  // Remove old points from the trail
+  trail = trail.filter(point => millis() - point.timestamp < trailDuration);
+
+  // Draw the trail with fading effect
+  noFill();
+  for (let i = 1; i < trail.length; i++) {
+    let curr = trail[i];
+    let prev = trail[i - 1];
+
+    // Calculate opacity based on time elapsed
+    let age = millis() - curr.timestamp;
+    let alpha = map(age, 0, trailDuration, 255, 0);
+
+    stroke(trailColor[0], trailColor[1], trailColor[2], alpha); // Apply color with fade
+    strokeWeight(trailThickness);
+    line(prev.x, prev.y, curr.x, curr.y); // Draw the trail segment
+  }
+  
+  // Reset stroke and fill after drawing trail
+  noStroke();
+  fill(0);
+}
 
 // Main Game Class
 class VeggieWarrior {
@@ -252,11 +293,39 @@ class Vegetable {
     }
   }
 
+  slice() {
+    if (this.state === "whole") {
+      this.state = "halves";
+      this.halves = [
+        {
+          x: this.x - this.size / 4,
+          y: this.y,
+          size: this.size / 2,
+          vx: random(-2, -1),
+          vy: random(-5, -3),
+          image: veggieImages[this.type].sliced
+        },
+        {
+          x: this.x + this.size / 4,
+          y: this.y,
+          size: this.size / 2,
+          vx: random(1, 2),
+          vy: random(-5, -3),
+          image: veggieImages[this.type].sliced
+        }
+      ];
+    }
+  }
+
   isOffScreen() {
     if (this.state === "halves") {
       return this.halves.every(half => half.y > height);
     }
     return this.y > height;
+  }
+
+  isHovered(mx, my) {
+    return dist(mx, my, this.x, this.y) < this.size / 2;
   }
 }
 
