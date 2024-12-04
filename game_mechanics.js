@@ -1,5 +1,6 @@
 // Declare variables for veggie images and veggie list
 let veggieImages = {};              // Object to store whole and sliced images
+let woodBackground;                 // Variable for the wood-textured background
 let veggies = [
   "bell pepper", "broccoli", "carrot", "chilli", "corn", "eggplant",
   "green bean", "mushroom", "potato", "pumpkin", "shallot", "tomato", "zucchini"
@@ -20,6 +21,7 @@ function preload() {
       sliced: loadImage(`Images/haft ${veggie}.png`)        // Sliced veggie image
     };
   }
+  woodBackground = loadImage("Images/Wood background.png");       // Load the wood-textured background
 }
 
 function setup() {
@@ -186,7 +188,7 @@ class VeggieWarrior {
   }
 
   displayStartScreen() {
-    background(120, 200, 100);
+    image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textSize(50);
     textAlign(CENTER, CENTER);
@@ -199,7 +201,7 @@ class VeggieWarrior {
   }
 
   displayHowToPlayScreen() {
-    background(150, 200, 150);
+    image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textSize(20);
     textAlign(CENTER, CENTER);
@@ -218,6 +220,7 @@ class VeggieWarrior {
     this.howToPlayButton.hide();
 
     // Display score and lives
+    image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textSize(20);
     fill(0);
@@ -231,7 +234,7 @@ class VeggieWarrior {
   }
 
   displayEndScreen() {
-    background(200, 50, 50);
+    image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textAlign(CENTER, CENTER);
     textSize(50);
