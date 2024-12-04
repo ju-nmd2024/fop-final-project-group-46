@@ -11,8 +11,8 @@ let game;                           // Main game object
 // Trail variables
 let trail = [];                                             // Array to store trail positions
 let trailDuration = 250;                                    // Duration in milliseconds for trail to persist
-let trailThickness = 5;                                     // Thickness of the trail
-let trailColor = [10, 0, 0, 30];                            // Greyish Black color
+let trailThickness = 10;                                    // Thickness of the trail
+let trailColor = [10, 0, 0, 200];                           // Greyish Black color
 
 function preload() {
   // Load both whole and sliced versions for each veggie
@@ -32,11 +32,11 @@ function setup() {
 }
 
 function draw() {
-  background(200);
+  image(woodBackground, 0, 0, width, height);
 
   // Draw the trail
   drawTrail();
-
+  
   game.update();
   game.display();
 }
