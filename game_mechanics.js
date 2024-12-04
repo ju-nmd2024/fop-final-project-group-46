@@ -1,6 +1,7 @@
 // Declare variables for veggie images and veggie list
 let veggieImages = {};              // Object to store whole and sliced images
 let woodBackground;                 // Variable for the wood-textured background
+let meatImage;                      // Variable for meat image
 let veggies = [
   "bell pepper", "broccoli", "carrot", "chilli", "corn", "eggplant",
   "green bean", "mushroom", "potato", "pumpkin", "shallot", "tomato", "zucchini"
@@ -22,6 +23,7 @@ function preload() {
     };
   }
   woodBackground = loadImage("Images/Wood background.png");       // Load the wood-textured background
+  meatImage = loadImage("Images/Meat.png");                       // Load the meat image
 }
 
 function setup() {
@@ -132,9 +134,15 @@ class VeggieWarrior {
   }
 
   spawnVeggie() {
+    // Choosing meat to spawn randomly
+    let isMeat = random(1) < 0.1;                   // Setting the spawning rate at 10%
+    if (isMeat) {
+      this.veggies.push(new Meat(random(width), height - 20, random(50, 70))); // Spawn meat
+    } else {
     // Choose a random veggie type and spawn it
-    let type = random(veggies);
-    this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50), type));
+      let type = random(veggies);
+      this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50), type));
+    }
   }
 
   update() {
@@ -146,14 +154,14 @@ class VeggieWarrior {
   updateGameScreen() {
     // Update and display veggies
     for (let i = this.veggies.length - 1; i >= 0; i--) {
-      let veg = this.veggies[i];
-      veg.update();
+      let obj = this.veggies[i];
+      obj.update();
 
-      if (veg.isOffScreen()) {
-        if (veg.state === "whole") {
+      if (obj.isOffScreen()) {
+        this.veggies.splice(i, 1);
+        if (obj instanceof Vegetable && obj.state === "whole") {
           this.lives--; // Reduce life only for unsliced veggies.
         }
-        this.veggies.splice(i, 1);
       }
     }
 
@@ -248,6 +256,72 @@ class VeggieWarrior {
   }
 }
 
+// Meat Class
+class Meat {
+  constructor(x, y, size) {
+    this.x = x;
+    this.y = y;
+    this.size = size;
+    this.vx = random(-2, 2);
+    this.vy = random(-10, -6);
+    this.state = "whole";             // State can be "whole" or "sliced"
+    this.halves = [];                 // Holds the two halves if sliced
+  }
+
+  update() {
+    if (this.state === "whole") {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.vy += 0.2; // Gravity effect
+
+      if (this.x <= 0 || this.x >= width) this.vx *= -1;
+      if (this.y <= 0) {
+        this.vy *= -1;
+        this.y = 0;
+      }
+    } else if (this.state === "sliced") {
+      for (let half of this.halves) {
+        half.x += half.vx;
+        half.y += half.vy;
+        half.vy += 0.2; // Gravity
+      }
+    }
+  }
+
+  display() {
+    if (this.state === "whole") {
+      image(meatImage, this.x - this.size / 2, this.y - this.size / 2, this.size, this.size);
+    } else if (this.state === "sliced") {
+      for (let half of this.halves) {
+        image(meatImage, half.x - this.size / 4, half.y - this.size / 4, this.size / 2, this.size / 2);
+      }
+    }
+  }
+
+  slice() {
+    if (this.state === "whole") {
+      this.state = "sliced";
+      this.halves = [
+        { x: this.x - this.size / 4, y: this.y, vx: random(-2, -1), vy: random(-6, -4) },
+        { x: this.x + this.size / 4, y: this.y, vx: random(1, 2), vy: random(-6, -4) }
+      ];
+      game.state = "end"; // End the game immediately
+    }
+  }
+
+  isOffScreen() {
+    if (this.state === "whole") {
+      return this.y - this.size / 2 > height;
+    } else {
+      return this.halves.every(half => half.y - this.size / 2 > height);
+    }
+  }
+
+  isHovered(mx, my) {
+    return dist(mx, my, this.x, this.y) < this.size / 2;
+  }
+}
+
 // Vegetable Class
 class Vegetable {
   constructor(x, y, size, veggieType) {
@@ -256,7 +330,7 @@ class Vegetable {
     this.size = size;
     this.vx = random(-2, 2);
     this.vy = random(-10, -6);            // Upward velocity
-    this.type = veggieType;                     // Type of veggie (e.g., "carrot")
+    this.type = veggieType;               // Type of veggie (e.g., "carrot")
     this.state = "whole";                 // Can be "whole" or "halves"
     this.halves = [];                     // Holds the two halves if sliced
   }
@@ -336,20 +410,16 @@ class Vegetable {
 function mouseDragged() {
   if (game.state === "game") {
     for (let i = game.veggies.length - 1; i >= 0; i--) {
-      let veg = game.veggies[i];
-      if (veg.state === "whole") {
-        let d = dist(mouseX, mouseY, veg.x, veg.y);
-        if (d < veg.size / 2) {
-          veg.state = "halves";
-
-          // Create two halves
-          veg.halves = [
-            { x: veg.x - 10, y: veg.y, vx: random(-2, -1), vy: random(-6, -4) },
-            { x: veg.x + 10, y: veg.y, vx: random(1, 2), vy: random(-6, -4) }
-          ];
-
-          game.score++;
-          break;
+      let obj = game.veggies[i]; // Generic object (can be vegetable or meat)
+      if (obj.state === "whole") {
+        let d = dist(mouseX, mouseY, obj.x, obj.y);
+        if (d < obj.size / 2) {
+          obj.slice(); // Call the slice method for the object
+          if (obj instanceof Vegetable) {
+            // Increase score only for vegetables
+            game.score++;
+          }
+          break; // Exit loop once an object is sliced
         }
       }
     }
