@@ -11,3 +11,12 @@ main {
   justify-content: center;
   align-items: center;
 }
+
+button{
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: forestgreen;
+  border-radius: 5px;
+  color: white;
+}
