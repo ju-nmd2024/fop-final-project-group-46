@@ -1,19 +1,19 @@
 // Declare variables for veggie images and veggie list
-let veggieImages = {};              // Object to store whole and sliced images
-let sounds = {};                    // Storing the audios
-let woodBackground;                 // Variable for the wood-textured background
-let meatImage;                      // Variable for meat image
+let veggieImages = {};                                      // An Object to store whole and sliced images
+let sounds = {};                                            // Storing the audios
+let woodBackground;                                         // A Variable for the wood-textured background
+let meatImage;                                              // A Variable for meat image
 let veggies = [
   "bell pepper", "broccoli", "carrot", "chilli", "corn", "eggplant",
   "green bean", "mushroom", "potato", "pumpkin", "shallot", "tomato", "zucchini"
 ];
-let game;                           // Main game object
+let game;                                                   // Main game object
 
 // Trail variables
-let trail = [];                                             // Array to store trail positions
+let trail = [];                                             // An Array to store trail positions
 let trailDuration = 250;                                    // Duration in milliseconds for trail to persist
-let trailThickness = 10;                                    // Thickness of the trail
-let trailColor = [10, 0, 0, 200];                           // Greyish Black color
+let trailThickness = 10;                                    // The Thickness of the trail
+let trailColor = [10, 0, 0, 30];                            // A Greyish Black color
 
 function preload() {
   // Load both whole and sliced versions for each veggie
@@ -23,8 +23,8 @@ function preload() {
       sliced: loadImage(`Images/haft ${veggie}.png`)              // Sliced veggie image
     };
   }
-  woodBackground = loadImage("Images/Wood background.png");       // Load the wood-textured background
-  meatImage = loadImage("Images/Meat.png");                       // Load the meat image
+  woodBackground = loadImage("Images/Wood background.png");       // Loading the wood-textured background
+  meatImage = loadImage("Images/Meat.png");                       // Loading the meat image
 
   // Load sounds
   soundFormats("mp3");
@@ -35,7 +35,7 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(windowWidth, windowHeight); // Adjust canvas to full window size
+    createCanvas(windowWidth, windowHeight);                      // Adjusting canvas to full window size
     game = new VeggieWarrior();
 }
 
@@ -61,9 +61,9 @@ function drawTrail() {
     let age = millis() - curr.timestamp;
     let alpha = map(age, 0, trailDuration, 255, 0);
 
-    stroke(trailColor[0], trailColor[1], trailColor[2], alpha); // Apply color with fade
+    stroke(trailColor[0], trailColor[1], trailColor[2], alpha);     // Applying color with fade
     strokeWeight(trailThickness);
-    line(prev.x, prev.y, curr.x, curr.y); // Draw the trail segment
+    line(prev.x, prev.y, curr.x, curr.y);                           // Drawing the trail segment
   }
   
   // Reset stroke and fill after drawing trail
@@ -84,7 +84,7 @@ function draw() {
 // Main Game Class
 class VeggieWarrior {
   constructor() {
-    this.state = "start"; // start, game, howToPlay, end
+    this.state = "start";                                           // States like start, game, howToPlay, end
     this.veggies = [];
     this.maxVeggies = 1;
     this.veggieSpawnTimer = 0;
@@ -113,14 +113,14 @@ class VeggieWarrior {
     this.restartButton.hide();
 
     this.font = "Georgia";  
-    this.spawnVeggie(); // Spawn initial veggie
+    this.spawnVeggie();                                             // Spawning initial veggie
   }
 
   createButton(label, x, y, callback) {
     let btn = createButton(label);
     btn.position(x, y);
     btn.mousePressed(callback);
-    btn.class("p5button"); // Add a custom class for CSS
+    btn.class("p5button");                                          // Adding a custom class for CSS
     btn.hide();
     return btn;
   }
@@ -133,7 +133,7 @@ class VeggieWarrior {
   }
 
   restartGame() {
-    sounds.over.stop(); // Stop the game-over sound when restarting
+    sounds.over.stop();                                             // Stopping the game-over sound when restarting
     this.state = "start";
     this.lives = 3;
     this.score = 0;
@@ -145,9 +145,9 @@ class VeggieWarrior {
 
   spawnVeggie() {
     // Choosing meat to spawn randomly
-    let isMeat = random(1) < 0.1;                   // Setting the spawning rate at 10%
+    let isMeat = random(1) < 0.1;                                   // Setting the spawning rate at 10%
     if (isMeat) {
-      this.veggies.push(new Meat(random(width), height - 20, random(50, 70))); // Spawn meat
+      this.veggies.push(new Meat(random(width), height - 20, random(50, 70)));              // Spawning meat
     } else {
     // Choose a random veggie type and spawn it
       let type = random(veggies);
@@ -163,7 +163,7 @@ class VeggieWarrior {
 
   updateGameScreen() {
     if (sounds.start.isPlaying()) {
-      sounds.start.stop();  // Stop the start screen sound when the game starts
+      sounds.start.stop();                                          // Stopping the start screen sound when the game starts
   }
     // Update and display veggies
     for (let i = this.veggies.length - 1; i >= 0; i--) {
@@ -173,7 +173,7 @@ class VeggieWarrior {
       if (obj.isOffScreen()) {
         this.veggies.splice(i, 1);
         if (obj instanceof Vegetable && obj.state === "whole") {
-          this.lives--;                                             // Reduce life only for unsliced veggies.
+          this.lives--;                                             // Reducning the life only for unsliced veggies.
           sounds.missed.play();                                     // Play missed sound for veggies
         }
       }
@@ -211,7 +211,7 @@ class VeggieWarrior {
 
   displayStartScreen() {
     if (!sounds.start.isPlaying()) {
-      sounds.start.loop();                                  // Loop the start screen sound
+      sounds.start.loop();                                            // Looping the start screen sound
     }
     image(woodBackground, 0, 0, width, height);
     textFont(this.font);
@@ -227,7 +227,7 @@ class VeggieWarrior {
 
   displayHowToPlayScreen() {
     if (!sounds.start.isPlaying()) {
-      sounds.start.loop();                                  // Loop the start screen sound
+      sounds.start.loop();                                            // Looping the start screen sound
     }
     image(woodBackground, 0, 0, width, height);
     textFont(this.font);
@@ -235,7 +235,7 @@ class VeggieWarrior {
     textAlign(CENTER, CENTER);
     fill(255);
     text(
-      "HOW TO PLAY:\n\nDrag the mouse over veggies to slice them!\nDon't let veggies fall off the screen.\nLose 3 lives and it's game over!",
+      "HOW TO PLAY:\n\nDrag the mouse over veggies to slice them! Keep an eye out on the MEAT. Make sure you don't slice it.\nDon't let veggies fall off the screen. Lose 3 lives and it's game over!",
       width / 2,
       height / 2 - 50
     );
@@ -265,7 +265,7 @@ class VeggieWarrior {
 
   displayEndScreen() {
     if (!sounds.over.isPlaying()) {
-    sounds.over.loop();                                   // Loop the game-over sound
+    sounds.over.loop();                                                 // Looping the game-over sound
     }
     image(woodBackground, 0, 0, width, height);
     textFont(this.font);
@@ -297,15 +297,15 @@ class Meat {
     this.size = size;
     this.vx = random(-2, 2);
     this.vy = random(-10, -6);
-    this.state = "whole";             // State can be "whole" or "sliced"
-    this.halves = [];                 // Holds the two halves if sliced
+    this.state = "whole";                                               // As the state can be "whole" or "sliced"
+    this.halves = [];                                                   // This will hold the two halves if sliced
   }
 
   update() {
     if (this.state === "whole") {
       this.x += this.vx;
       this.y += this.vy;
-      this.vy += 0.2; // Gravity effect
+      this.vy += 0.2;                                                   // Gravity effect
 
       if (this.x <= 0 || this.x >= width) this.vx *= -1;
       if (this.y <= 0) {
@@ -316,7 +316,7 @@ class Meat {
       for (let half of this.halves) {
         half.x += half.vx;
         half.y += half.vy;
-        half.vy += 0.2; // Gravity
+        half.vy += 0.2;                                                 // Gravity
       }
     }
   }
@@ -338,7 +338,7 @@ class Meat {
         { x: this.x - this.size / 4, y: this.y, vx: random(-2, -1), vy: random(-6, -4) },
         { x: this.x + this.size / 4, y: this.y, vx: random(1, 2), vy: random(-6, -4) }
       ];
-      game.state = "end"; // End the game immediately
+      game.state = "end";                                               // Ending the game immediately
     }
   }
 
@@ -362,10 +362,10 @@ class Vegetable {
     this.y = y;
     this.size = size;
     this.vx = random(-2, 2);
-    this.vy = random(-10, -6);            // Upward velocity
-    this.type = veggieType;               // Type of veggie (e.g., "carrot")
-    this.state = "whole";                 // Can be "whole" or "halves"
-    this.halves = [];                     // Holds the two halves if sliced
+    this.vy = random(-10, -6);                                          // Upward velocity
+    this.type = veggieType;                                             // Type of veggie (e.g., "carrot")
+    this.state = "whole";                                               // Can be "whole" or "halves"
+    this.halves = [];                                                   // Holds the two halves if sliced
   }
 
   update() {
@@ -379,7 +379,7 @@ class Vegetable {
       for (let half of this.halves) {
         half.x += half.vx;
         half.y += half.vy;
-        half.vy += 0.2; // Gravity
+        half.vy += 0.2;                                                 // Gravity
       }
     }
 
@@ -445,16 +445,16 @@ class Vegetable {
 function mouseDragged() {
   if (game.state === "game") {
     for (let i = game.veggies.length - 1; i >= 0; i--) {
-      let obj = game.veggies[i]; // Generic object (can be vegetable or meat)
+      let obj = game.veggies[i];                                              // Generic object (can be vegetable or meat)
       if (obj.state === "whole") {
         let d = dist(mouseX, mouseY, obj.x, obj.y);
         if (d < obj.size / 2) {
-          obj.slice(); // Call the slice method for the object
+          obj.slice();                                                        // Calling the slice method for the object
           if (obj instanceof Vegetable) {
             // Increase score only for vegetables
             game.score++;
           }
-          break; // Exit loop once an object is sliced
+          break;                                                              // Exiting the loop once an object is sliced
         }
       }
     }
