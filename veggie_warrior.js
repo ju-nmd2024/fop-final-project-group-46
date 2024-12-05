@@ -9,7 +9,7 @@ let veggies = [
 ];
 let game;                                                   // Main game object
 
-// Trail variables
+// Trail variables: Taken help from Bassima in almost everything regards with trail
 let trail = [];                                             // An Array to store trail positions
 let trailDuration = 250;                                    // Duration in milliseconds for trail to persist
 let trailThickness = 10;                                    // The Thickness of the trail
@@ -26,7 +26,7 @@ function preload() {
   woodBackground = loadImage("Images/Wood background.png");       // Loading the wood-textured background
   meatImage = loadImage("Images/Meat.png");                       // Loading the meat image
 
-  // Load sounds
+  // Load sounds: Taken help from Garrit in the "loading the sound"
   soundFormats("mp3");
   sounds.start = loadSound("Audio/sounds_start.mp3");
   sounds.splatter = loadSound("Audio/sounds_splatter.mp3");
@@ -283,10 +283,10 @@ class VeggieWarrior {
 
 window.onresize = () => {
     resizeCanvas(windowWidth, windowHeight);
-    // Reposition buttons on resize
-    game.playButton.position(windowWidth / 2 - 60, windowHeight / 2);
-    game.howToPlayButton.position(windowWidth / 2 - 60, windowHeight / 2 + 50);
-    game.restartButton.position(windowWidth / 2 - 40, windowHeight / 2 + 50);
+    // Repositioning buttons on resize
+    game.playButton.position(windowWidth / 2 - 80, windowHeight / 2);
+    game.howToPlayButton.position(windowWidth / 2 - 80, windowHeight / 2 + 50);
+    game.restartButton.position(windowWidth / 2 - 60, windowHeight / 2 + 50);
   };
   
 // Meat Class
