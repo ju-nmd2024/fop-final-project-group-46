@@ -130,6 +130,7 @@ class VeggieWarrior {
     this.state = "game";
     this.playButton.hide();
     this.howToPlayButton.hide();
+    sounds.start.stop();
   }
 
   restartGame() {
@@ -162,6 +163,9 @@ class VeggieWarrior {
   }
 
   updateGameScreen() {
+    if (sounds.start.isPlaying()) {
+      sounds.start.stop();  // Stop the start screen sound when the game starts
+  }
     // Update and display veggies
     for (let i = this.veggies.length - 1; i >= 0; i--) {
       let obj = this.veggies[i];
