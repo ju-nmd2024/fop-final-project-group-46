@@ -1,5 +1,6 @@
 // Declare variables for veggie images and veggie list
 let veggieImages = {};              // Object to store whole and sliced images
+let sounds = {};                    // Storing the audios
 let woodBackground;                 // Variable for the wood-textured background
 let meatImage;                      // Variable for meat image
 let veggies = [
@@ -18,17 +19,24 @@ function preload() {
   // Load both whole and sliced versions for each veggie
   for (let veggie of veggies) {
     veggieImages[veggie] = {
-      whole: loadImage(`Images/${veggie}.png`),             // Whole veggie image
-      sliced: loadImage(`Images/haft ${veggie}.png`)        // Sliced veggie image
+      whole: loadImage(`Images/${veggie}.png`),                   // Whole veggie image
+      sliced: loadImage(`Images/haft ${veggie}.png`)              // Sliced veggie image
     };
   }
   woodBackground = loadImage("Images/Wood background.png");       // Load the wood-textured background
   meatImage = loadImage("Images/Meat.png");                       // Load the meat image
+
+  // Load sounds
+  sounds.start = loadSound("Audio/sounds_start.mp3");
+  sounds.splatter = loadSound("Audio/sounds_splatter.mp3");
+  sounds.missed = loadSound("Audio/sounds_missed.mp3");
+  sounds.over = loadSound("Audio/sounds_over.mp3");
 }
 
 function setup() {
   createCanvas(600, 400);
   game = new VeggieWarrior();
+  // console.log(typeof loadSound);
 }
 
 function draw() {
@@ -124,6 +132,7 @@ class VeggieWarrior {
   }
 
   restartGame() {
+    sounds.over.stop(); // Stop the game-over sound when restarting
     this.state = "start";
     this.lives = 3;
     this.score = 0;
@@ -160,7 +169,8 @@ class VeggieWarrior {
       if (obj.isOffScreen()) {
         this.veggies.splice(i, 1);
         if (obj instanceof Vegetable && obj.state === "whole") {
-          this.lives--; // Reduce life only for unsliced veggies.
+          this.lives--;                                             // Reduce life only for unsliced veggies.
+          sounds.missed.play();                                     // Play missed sound for veggies
         }
       }
     }
@@ -196,6 +206,9 @@ class VeggieWarrior {
   }
 
   displayStartScreen() {
+    if (!sounds.start.isPlaying()) {
+      sounds.start.loop();                                  // Loop the start screen sound
+    }
     image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textSize(50);
@@ -209,6 +222,9 @@ class VeggieWarrior {
   }
 
   displayHowToPlayScreen() {
+    if (!sounds.start.isPlaying()) {
+      sounds.start.loop();                                  // Loop the start screen sound
+    }
     image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textSize(20);
@@ -242,6 +258,9 @@ class VeggieWarrior {
   }
 
   displayEndScreen() {
+    if (!sounds.over.isPlaying()) {
+      sounds.over.loop();                                   // Loop the game-over sound
+    }
     image(woodBackground, 0, 0, width, height);
     textFont(this.font);
     textAlign(CENTER, CENTER);
@@ -391,6 +410,8 @@ class Vegetable {
           image: veggieImages[this.type].sliced
         }
       ];
+      // Play splattering sound when a veggie is sliced
+      sounds.splatter.play();
     }
   }
 
