@@ -151,7 +151,7 @@ class VeggieWarrior {
     } else {
     // Choose a random veggie type and spawn it
       let type = random(veggies);
-      this.veggies.push(new Vegetable(random(width), height - 20, random(30, 50), type));
+      this.veggies.push(new Vegetable(random(width), height - 20, random(60, 100), type));
     }
   }
 
