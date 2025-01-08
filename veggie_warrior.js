@@ -90,6 +90,9 @@ class VeggieWarrior {
     this.veggieSpawnTimer = 0;
     this.lives = 3;
     this.score = 0;
+    this.comboCount = 0; 
+    this.highestCombo = 0; 
+    this.comboTimer = 0;
 
     // Buttons
     this.playButton = this.createButton("Click to Play", width / 2 - 60, height / 2, () => {
@@ -175,7 +178,12 @@ class VeggieWarrior {
         if (obj instanceof Vegetable && obj.state === "whole") {
           this.lives--;                                             // Reducning the life only for unsliced veggies.
           sounds.missed.play();                                     // Play missed sound for veggies
+          this.comboCount = 0;                                      // Reset combo count on miss
         }
+      }
+            
+      if (millis() - this.comboTimer > 1000) {                      // 1 second duration for combo
+        this.comboCount = 0;                                        // Reset combo count if time exceeds
       }
     }
 
@@ -256,6 +264,10 @@ class VeggieWarrior {
     fill(0);
     text(`Score: ${this.score}`, 50, 20);
     text(`Lives: ${this.lives}`, width - 100, 20);
+    text(`Combo: ${this.comboCount}`, 50, 50);
+    text(`Highest Combo: ${this.highestCombo}`, 86, 80); 
+
+
 
     // Display veggies
     for (let veg of this.veggies) {
@@ -452,7 +464,14 @@ function mouseDragged() {
           obj.slice();                                                        // Calling the slice method for the object
           if (obj instanceof Vegetable) {
             // Increase score only for vegetables
-            game.score++;
+            let points = 2;                                                   // Base points for slicing
+            if (game.comboCount > 1) {
+              points *= 2;                                                    // Double points if in combo
+            }
+            game.score += points;                                             // Add points to score
+            game.comboCount++;                                                // Increment combo count
+            game.comboTimer = millis();                                       // Reset combo timer
+            game.highestCombo = max(game.highestCombo, game.comboCount);      // Update highest combo
           }
           break;                                                              // Exiting the loop once an object is sliced
         }
