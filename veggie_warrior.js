@@ -264,14 +264,22 @@ class VeggieWarrior {
     fill(0);
     text(`Score: ${this.score}`, 50, 20);
     text(`Lives: ${this.lives}`, width - 100, 20);
-    text(`Combo: ${this.comboCount}`, 50, 50);
-    text(`Highest Combo: ${this.highestCombo}`, 86, 80); 
+    text(`Highest Combo: ${this.highestCombo}`, 95, 50); 
 
-
+    this.displayComboMessage();
 
     // Display veggies
     for (let veg of this.veggies) {
       veg.display();
+    }
+  }
+
+  displayComboMessage() {
+    if (this.comboCount > 1) {
+    textSize(48);
+    textAlign(CENTER, CENTER);
+    fill(255);
+    text(`Combo x${this.comboCount}`, width / 2, height / 2); 
     }
   }
 
@@ -308,7 +316,7 @@ class Meat {
     this.y = y;
     this.size = size;
     this.vx = random(-2, 2);
-    this.vy = random(-10, -6);
+    this.vy = random(-16, -10);
     this.state = "whole";                                               // As the state can be "whole" or "sliced"
     this.halves = [];                                                   // This will hold the two halves if sliced
   }
@@ -374,7 +382,7 @@ class Vegetable {
     this.y = y;
     this.size = size;
     this.vx = random(-2, 2);
-    this.vy = random(-10, -6);                                          // Upward velocity
+    this.vy = random(-16, -12);                                          // Upward velocity
     this.type = veggieType;                                             // Type of veggie (e.g., "carrot")
     this.state = "whole";                                               // Can be "whole" or "halves"
     this.halves = [];                                                   // Holds the two halves if sliced
@@ -464,7 +472,7 @@ function mouseDragged() {
           obj.slice();                                                        // Calling the slice method for the object
           if (obj instanceof Vegetable) {
             // Increase score only for vegetables
-            let points = 2;                                                   // Base points for slicing
+            let points = 1;                                                   // Base points for slicing
             if (game.comboCount > 1) {
               points *= 2;                                                    // Double points if in combo
             }
